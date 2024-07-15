@@ -8,7 +8,7 @@ const Stopwatch = () => {
   const startPauseButtonText = isRunning ? 'Pause' : 'Start';
 
   useEffect(() => {
-    return () => clearInterval(intervalRef.current);
+    return () => clearInterval(intervalRef.current);  
   }, []);
 
   const startPauseHandler = () => {

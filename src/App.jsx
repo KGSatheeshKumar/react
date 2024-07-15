@@ -1,43 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect, useRef } from 'react';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const Stopwatch = () => {
+  const [isRunning, setIsRunning] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const intervalRef = useRef(null);
+  const startPauseButtonText = isRunning ? 'Pause' : 'Start';
+
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const startPauseHandler = () => {
+    if (isRunning) {
+      clearInterval(intervalRef.current);
+    } else {
+      const startTime = Date.now() - elapsedTime;
+      intervalRef.current = setInterval(() => {
+        setElapsedTime(Date.now() - startTime);
+      }, 10);
+    }
+    setIsRunning(!isRunning);
+  };
+
+  const resetHandler = () => {
+    clearInterval(intervalRef.current);
+    setElapsedTime(0);
+    setIsRunning(false);
+  };
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / (1000 * 60)).toString().padStart(2, '0');
+    const seconds = Math.floor((time / 1000) % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  };
 
   return (
-    <>
-      <center><img src="img/saveetha-logo.jpg" alt="" /></center>
-      <form action="" method="get" >
-        <h1>ADMISSION FORM</h1>
-        <input type="text" minlength="3" maxlength="100" pattern="[A-Za-z. ]*" name="fname" placeholder="First Name" /><br />
-        <input type="text" minlength="3" maxlength="100" name="lname" pattern="[A-Za-z. ]*" placeholder="Last Name" /><br />
-        <input type="email" required name="email" pattern="[a-z0-9._]+@[a-z0-9.\-]+.[a-z]{2,4}$" placeholder="Email" /><br />
-        DOB: <input type="date" name="date" /><br />
-        <input type="number" min="6000000000" max="9999999999" name="number" placeholder="Number" /><br />
-        <textarea name="address" id="" cols="30" rows="3" placeholder="Address"></textarea><br />
-        GENDER: <br />
-        <input type="radio" name="gender" value="m" />Male <br />
-        <input type="radio" name="gender" value="f" />Female <br />
-        
-        SELECT DEPARMENT: <br /><select name="course" >
-            <option value="">Select an option</option>
-            <option value="IT">IT</option>
-            <option value="CSE">CSE</option>
-            <option value="AIML">AIML</option>
-            <option value="AIDS">AIDS</option>
-            <option value="EEE">EEE</option>
-            <option value="ECE">ECE</option>
-            <option value="MECH">MECH</option>
-            <option value="CIVIL">CIVIL</option>
-        </select> <br />
+    <div className="stopwatch">
+      <h1>Stop Watch</h1>
+      <div className="elapsed-time">{formatTime(elapsedTime)}</div>
+      <div className="controls">
+      
+        <button onClick={startPauseHandler}>{startPauseButtonText}</button>
+        <button onClick={resetHandler} disabled={isRunning}>
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+};
 
-        <input type="submit" value="Save" />
-        <input type="reset" value="Clear" />
-    </form>
-    </>
-  )
-}
-
-export default App
+export default Stopwatch;
